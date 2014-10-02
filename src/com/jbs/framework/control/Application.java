@@ -14,6 +14,7 @@ import com.jbs.framework.rendering.Screen;
 
 public class Application implements ApplicationListener {
 	
+	
 	/* The amount of time to simulate per update call. */
 	private final long timeStep = 20L;
 	
