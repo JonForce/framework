@@ -14,7 +14,6 @@ import com.jbs.framework.rendering.Screen;
 
 public class Application implements ApplicationListener {
 	
-	
 	/* The amount of time to simulate per update call. */
 	private final long timeStep = 20L;
 	
@@ -38,12 +37,12 @@ public class Application implements ApplicationListener {
 	 * Create an Application with the specified virtual coordinate system size.
 	 * The virtual-width and virtual-height should stay consistent across all platforms and
 	 * screen sizes.
-	 * The defualt state of the Application is the NullState.
+	 * The default state of the Application is the NullState.
 	 * @param virtualWidth The virtual coordinate system's width.
 	 * @param virtualHeight The virtual coordinate system's height.
 	 */
 	public Application(int virtualWidth, int virtualHeight) {
-		this.screen = new Screen(virtualWidth, virtualHeight, 0, 0) {
+		this.screen = new Screen(0, 0, virtualWidth, virtualHeight) {
 			@Override
 			public int actualWidth() {
 				return Gdx.graphics.getWidth();
@@ -100,7 +99,8 @@ public class Application implements ApplicationListener {
 	public void create() {
 		// Initialize our orthographic camera with the screen's actual size.
 		camera = new OrthographicCamera(screen().actualWidth(), screen().actualHeight());
-		camera.setToOrtho(false, screen().virtualWidth(), screen().virtualHeight());
+		//camera.setToOrtho(false, screen().virtualWidth(), screen().virtualHeight());
+		camera.setToOrtho(false);
 		
 		// Disable the enforcement of only allowing pot images.
 		Texture.setEnforcePotImages(false);
