@@ -34,19 +34,50 @@ public class Application implements ApplicationListener {
 	
 	private Texture dot;
 	
-	public Application(Screen screen) {
-		// Initialize our public immutable screen with the data from the constructor.
-		this.screen = screen;
-		// Initialize our input proxy with the Application's immutable screen member.
-		input = new InputProxy(this.screen());
+	/**
+	 * Create an Application with the specified virtual coordinate system size.
+	 * The virtual-width and virtual-height should stay consistent across all platforms and
+	 * screen sizes.
+	 * The defualt state of the Application is the NullState.
+	 * @param virtualWidth The virtual coordinate system's width.
+	 * @param virtualHeight The virtual coordinate system's height.
+	 */
+	public Application(int virtualWidth, int virtualHeight) {
+		this.screen = new Screen(virtualWidth, virtualHeight, 0, 0) {
+			@Override
+			public int actualWidth() {
+				return Gdx.graphics.getWidth();
+			}
+			
+			@Override
+			public int actualHeight() {
+				return Gdx.graphics.getHeight();
+			}
+		};
+		this.input = new InputProxy(this.screen());
 	}
 	
-	public Application(Screen screen, ApplicationState initialState) {
-		this(screen);
+	/**
+	 * Create an Application with the specified virtual coordinate system size
+	 * and set the Application to it's initial-state.
+	 * The virtual-width and virtual-height should stay consistent across all platforms and
+	 * screen sizes.
+	 * @param virtualWidth The width of the Application's virtual coordinate system.
+	 * @param virtualHeight The height of the Application's virtual coordinate system.
+	 * @param initialState The initial state of the Application.
+	 */
+	public Application(int virtualWidth, int virtualHeight, ApplicationState initialState) {
+		this(virtualWidth, virtualHeight);
 		// Bind our initial application state.
 		setState(initialState);
 	}
 	
+	/**
+	 * Exit the current ApplicationState and enter the new one.
+	 * The ApplicationState will automatically update the Application and
+	 * render to the SpriteBatch.
+	 * @param newState The new state of the Application.
+	 */
 	public void setState(ApplicationState newState) {
 		// We may not enter or exit states until the application is created.
 		if (created) {
@@ -148,31 +179,38 @@ public class Application implements ApplicationListener {
 		
 	}
 	
-	/*
+	/**
 	 * @return the Application's time step.
 	 */
 	public final float timeStep() {
 		return timeStep;
 	}
 	
-	/*
+	/** Set whether the Application should automatically draw touches. */
+	protected final void setDebugTouches(boolean flag) {
+		this.debugTouches = flag;
+	}
+	
+	/**
 	 * @return the Application's camera.
 	 */
 	protected final OrthographicCamera camera() {
 		return camera;
 	}
 	
-	/* @return the currently bound ApplicationState. */
+	/** @return the currently bound ApplicationState. */
 	protected ApplicationState applicationState() {
 		return applicationState;
 	}
 	
-	protected void setScreen(Screen newScreen) {
-		this.screen = newScreen;
-	}
-	
+	/** @return the Application's Screen. */
 	protected Screen screen() {
 		return screen;
+	}
+	
+	/** @return the SpriteBatch the Application uses to render. */
+	protected SpriteBatch spriteBatch() {
+		return this.batch;
 	}
 	
 	private void createDot() {

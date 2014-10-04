@@ -16,22 +16,6 @@ public class Screen {
 	}
 	
 	/*
-	 * @return the screen's actual aspect ratio.
-	 */
-	public float actualAspectRatio() {
-		// AspectRatio = height / width
-		return actualHeight() / actualWidth();
-	}
-	
-	/*
-	 * @return the screen's virtual aspect ratio.
-	 */
-	public float virtualAspectRatio() {
-		// AspectRatio = height / width
-		return (float) virtualHeight() / (float) virtualWidth();
-	}
-	
-	/*
 	 * @return the width of the device.
 	 */
 	public int actualWidth() {
@@ -60,10 +44,26 @@ public class Screen {
 	}
 	
 	/*
+	 * @return the screen's actual aspect ratio.
+	 */
+	public final float actualAspectRatio() {
+		// AspectRatio = height / width
+		return actualHeight() / actualWidth();
+	}
+	
+	/*
+	 * @return the screen's virtual aspect ratio.
+	 */
+	public final float virtualAspectRatio() {
+		// AspectRatio = height / width
+		return (float) virtualHeight() / (float) virtualWidth();
+	}
+	
+	/*
 	 * Creates a Vector2 from the actualX and actualY and
 	 * translates it to the screen's virtual coordinate system.
 	 */
-	public Vector2 virtualVec(int actualX, int actualY) {
+	public final Vector2 virtualVec(int actualX, int actualY) {
 		return new Vector2(toVirtualX(actualX), toVirtualY(actualY));
 	}
 	
@@ -71,49 +71,49 @@ public class Screen {
 	 * Creates a Vector2 from the virtualX and virtualY and
 	 * translates it to the screen's actual coordinate system.
 	 */
-	public Vector2 actualVec(int virtualX, int virtualY) {
+	public final Vector2 actualVec(int virtualX, int virtualY) {
 		return new Vector2(toActualX(virtualX), toActualY(virtualY));
 	}
 	
 	/*
 	 * Translate the Vector2 vec to the screen's virtual coordinate system.
 	 */
-	public void toVirtual(Vector2 vec) {
+	public final void toVirtual(Vector2 vec) {
 		vec.set(toVirtualX(vec.x), toVirtualY(vec.y));
 	}
 	
 	/*
 	 * Translate the Vector2 vec to the screen's actual coordinate system.
 	 */
-	public void toActual(Vector2 vec) {
+	public final void toActual(Vector2 vec) {
 		vec.set(toActualX(vec.x), toActualY(vec.y));
 	}
 	
 	/*
 	 * @return the screen x-coordinate actualX translated to virtual space.
 	 */
-	public int toVirtualX(float actualX) {
+	public final int toVirtualX(float actualX) {
 		return (int) (actualX * ((float) virtualWidth()/actualWidth()));
 	}
 	
 	/*
 	 * @return the screen y-coordinate actualY translated to virtual space.
 	 */
-	public int toVirtualY(float actualY) {
+	public final int toVirtualY(float actualY) {
 		return (int) (actualY * ((float) virtualHeight()/actualHeight()));
 	}
 	
 	/*
 	 * @return the virtual x-coordinate virtualX translated to actual screen space.
 	 */
-	public int toActualX(float virtualX) {
+	public final int toActualX(float virtualX) {
 		return (int) (virtualX * ((float) actualWidth()/virtualWidth()));
 	}
 	
 	/*
 	 * @return the virtual y-coordinate virtualY translated to actual screen space.
 	 */
-	public int toActualY(float virtualY) {
+	public final int toActualY(float virtualY) {
 		return (int) (virtualY * ((float) actualWidth()/virtualWidth()));
 	}
 }
