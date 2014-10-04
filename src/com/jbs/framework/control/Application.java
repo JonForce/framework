@@ -100,7 +100,7 @@ public class Application implements ApplicationListener {
 		// Initialize our orthographic camera with the screen's actual size.
 		camera = new OrthographicCamera(screen().actualWidth(), screen().actualHeight());
 		//camera.setToOrtho(false, screen().virtualWidth(), screen().virtualHeight());
-		camera.setToOrtho(false);
+		camera.setToOrtho(false, screen().virtualWidth(), screen().virtualHeight());
 		
 		// Disable the enforcement of only allowing pot images.
 		Texture.setEnforcePotImages(false);
