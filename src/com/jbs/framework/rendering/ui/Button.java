@@ -20,45 +20,45 @@ public class Button extends Graphic implements Updatable {
 	/* If the input's touch has yet been released */
 	private boolean hasReleasedTouch;
 	
-	public Button(int x, int y, Texture unpressedTexture, Texture pressedTexture) {
+	public Button(float x, float y, Texture unpressedTexture, Texture pressedTexture) {
 		super(x, y, unpressedTexture);
 		this.unpressedTexture = unpressedTexture;
 		this.pressedTexture = pressedTexture;
 	}
 	
 	public Button(Vector2 center, Texture unpressedTexture, Texture pressedTexture) {
-		this((int) center.x, (int) center.y, unpressedTexture, pressedTexture);
+		this(center.x, center.y, unpressedTexture, pressedTexture);
 	}
 	
 	public Button(Vector2 center, Texture texture) {
-		this((int) center.x, (int) center.y, texture, texture);
+		this(center.x, center.y, texture, texture);
 	}
 	
-	/* Set the both the Button's Textures. */
+	/** Set the both the Button's Textures. */
 	@Override
 	public void setTexture(Texture newTexture) {
 		setPressedTexture(newTexture);
 		setUnpressedTexture(newTexture);
 	}
 	
-	/* Set the Texture to render when the Button is pressed. */
+	/** Set the Texture to render when the Button is pressed. */
 	public void setPressedTexture(Texture newTexture) {
 		this.pressedTexture = newTexture;
 	}
 	
-	/* Set the Texture to render when the Button is not pressed. */
+	/** Set the Texture to render when the Button is not pressed. */
 	public void setUnpressedTexture(Texture newTexture) {
 		this.unpressedTexture = newTexture;
 	}
 	
-	/*
+	/**
 	 * @return the button's state of depression.
 	 */
 	public boolean isPressed() {
 		return pressed;
 	}
 	
-	/*
+	/**
 	 * @return the texture to be drawn, depends on the button's state.
 	 */
 	@Override
@@ -69,17 +69,17 @@ public class Button extends Graphic implements Updatable {
 			return unpressedTexture;
 	}
 	
-	/*
+	/**
 	 * React to the button being released.
 	 */
 	protected void onRelease() {}
 	
-	/*
+	/**
 	 * React to the button being pressed.
 	 */
 	protected void onPress() {}
 	
-	/*
+	/**
 	 * Updates the state of the button, checking for input with
 	 * the specified InputProxy and subsequently calling the
 	 * onRelease() and onPress() if the state changed.
@@ -103,25 +103,11 @@ public class Button extends Graphic implements Updatable {
 		}
 	}
 	
-	/*
-	 * Returns true if the input's position is within the
-	 * button.
-	 */
-	public final boolean checkInput(int inputX, int inputY) {
-		// Return true if :
-		// inputX is within [positionX, positionX + textureWidth] and
-		// inputY is within [positionY, positionY + textureHeight]
-		return ((inputX >= x() - unpressedTexture.getWidth()/2) &&
-				(inputX <= x() + unpressedTexture.getWidth()/2) &&
-				(inputY >= y() - unpressedTexture.getHeight()/2) &&
-				(inputY <= y() + unpressedTexture.getHeight()/2));
-	}
-	
-	/*
+	/**
 	 * Press the button, throws an error if the button is
 	 * already in it's pressed state.
 	 */
-	public final void press() {
+	public void press() {
 		// Assert that our button is not already in it's pressed state.
 		assert !this.isPressed();
 		// Set the button to it's pressed state.
@@ -130,12 +116,12 @@ public class Button extends Graphic implements Updatable {
 		onPress();
 	}
 	
-	/*
+	/**
 	 * Releases the button from it's pressed state,
 	 * throws an error if the button is not in it's pressed
 	 * state. Calls the onRelease method.
 	 */
-	public final void release() {
+	public void release() {
 		// Assert that our button is in it's pressed state.
 		assert this.isPressed();
 		// Set the button to it's released state.
@@ -144,7 +130,21 @@ public class Button extends Graphic implements Updatable {
 		onRelease();
 	}
 	
-	/*
+	/**
+	 * Returns true if the input's position is within the
+	 * button.
+	 */
+	public final boolean checkInput(float inputX, float inputY) {
+		// Return true if :
+		// inputX is within [positionX, positionX + textureWidth] and
+		// inputY is within [positionY, positionY + textureHeight]
+		return ((inputX >= x() - width()/2) &&
+				(inputX <= x() + width()/2) &&
+				(inputY >= y() - height()/2) &&
+				(inputY <= y() + height()/2));
+	}
+	
+	/**
 	 * Dispose of the textures 'pressedTexture' and
 	 * 'unpressedTexture' passed in through the button's constructor.
 	 */

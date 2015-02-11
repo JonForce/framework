@@ -19,6 +19,20 @@ public class InputProxy {
 		return Gdx.input.justTouched();
 	}
 	
+	/** @return the amount that the touch moved. */
+	public float getDeltaX(int touchIndex) {
+		return Gdx.input.getDeltaX(touchIndex);
+	}
+	/** @return the amount that the touch moved. */
+	public final float getDeltaX() { return getDeltaX(0); }
+	
+	/** @return the amount that the touch moved. */
+	public float getDeltaY(int touchIndex) {
+		return -Gdx.input.getDeltaY(touchIndex);
+	}
+	/** @return the amount that the touch moved. */
+	public final float getDeltaY() { return getDeltaY(0); }
+	
 	/*
 	 * Get the x-coordinate of the input with the ID of inputID.
 	 * Input can be from touch or mouse.

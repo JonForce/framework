@@ -2,9 +2,10 @@ package com.jbs.framework.control;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
@@ -23,7 +24,7 @@ public class Application implements ApplicationListener {
 	private ApplicationState applicationState;
 	private GameLoop gameLoop;
 	private SpriteBatch batch;
-	private OrthographicCamera camera;
+	private Camera camera;
 	
 	private boolean
 		/* True when the application has been initialized with the create() method */
@@ -97,10 +98,24 @@ public class Application implements ApplicationListener {
 	
 	@Override
 	public void create() {
-		// Initialize our orthographic camera with the screen's actual size.
-		camera = new OrthographicCamera(screen().actualWidth(), screen().actualHeight());
-		//camera.setToOrtho(false, screen().virtualWidth(), screen().virtualHeight());
-		camera.setToOrtho(false, screen().virtualWidth(), screen().virtualHeight());
+//		// Initialize our orthographic camera with the screen's actual size.
+//		camera = new OrthographicCamera(screen().actualWidth(), screen().actualHeight());
+//		//camera.setToOrtho(false, screen().virtualWidth(), screen().virtualHeight());
+//		((OrthographicCamera)camera).setToOrtho(false, screen().virtualWidth(), screen().virtualHeight());
+		
+		final float FOV = 67, d = 1000f;
+		PerspectiveCamera cam = new PerspectiveCamera(FOV, screen().virtualWidth(), screen().virtualHeight());
+		cam.near = 0.1f;
+		cam.far = 10000f;
+		// Math.cos(FOV / 2) * Hypotenuse -330
+		//cam.position.set((float)Math.cos(FOV) * d, (float)Math.sin(FOV) * d, (float)Math.tan(FOV) * d);
+		float h = ((screen().virtualWidth()/2f)) / (float)Math.sin(Math.toRadians(FOV));
+		float z = ((float)Math.cos(Math.toRadians(FOV)) * h);
+		System.out.println("h : " + h);
+		System.out.println("z : " + z);
+		cam.translate(screen().virtualWidth()/2, screen.virtualHeight()/2, 581);
+		//cam.lookAt(0, 0, 0);
+		this.camera = cam;
 		
 		// Disable the enforcement of only allowing pot images.
 		Texture.setEnforcePotImages(false);
@@ -122,22 +137,8 @@ public class Application implements ApplicationListener {
 			@Override
 			void renderTo(SpriteBatch batch) {
 				// If we have a bound application state.
-				if (applicationState() != null) {
-					Gdx.gl.glClearColor(0, 0, 0.2f, 1);
-					Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-					camera.update();
-					
-					batch.setProjectionMatrix(camera.combined);
-					batch.begin();
-					
-					// Render the application's state to our sprite batch.
-					applicationState().renderTo(batch);
-					
-					if (debugTouches)
-						batch.draw(dot, input.getX(), input.getY());
-					
-					batch.end();
-				}
+				if (applicationState() != null)
+					beginRenderingState(camera, batch);
 			}
 		};
 		
@@ -186,6 +187,27 @@ public class Application implements ApplicationListener {
 		return timeStep;
 	}
 	
+	public void beginRenderingState(Camera camera, SpriteBatch batch) {
+		Gdx.gl.glClearColor(0, 0, 0.2f, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		finishRenderingState(camera, batch);
+	}
+	
+	public void finishRenderingState(Camera camera, SpriteBatch batch) {
+		camera.update();
+		
+		batch.setProjectionMatrix(camera.combined);
+		batch.begin();
+		
+		// Render the application's state to our sprite batch.
+		applicationState().renderTo(batch);
+		
+		if (debugTouches)
+			batch.draw(dot, input.getX(), input.getY());
+		
+		batch.end();
+	}
+	
 	/** Set whether the Application should automatically draw touches. */
 	protected final void setDebugTouches(boolean flag) {
 		this.debugTouches = flag;
@@ -194,7 +216,7 @@ public class Application implements ApplicationListener {
 	/**
 	 * @return the Application's camera.
 	 */
-	protected final OrthographicCamera camera() {
+	protected final Camera camera() {
 		return camera;
 	}
 	
