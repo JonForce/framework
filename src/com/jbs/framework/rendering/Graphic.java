@@ -261,4 +261,22 @@ public class Graphic implements Renderable {
 		// Reset the batch's color back to it's color before we changed it.
 		batch.setColor(identity);
 	}
+	
+	public static void drawRotated(SpriteBatch batch, Texture texture, Vector2 center, float degrees) {
+		Graphic g = new Graphic(center, texture);
+		g.rotate(degrees);
+		g.renderTo(batch);
+		
+		batch.draw(
+				texture, // Draw the Graphic's texture.
+				center.x -texture.getWidth()/2, center.y - texture.getHeight()/2, // The position to render at.
+				texture.getWidth()/2, texture.getHeight()/2, // The offset relative to the position to rotate around.
+				texture.getWidth(), texture.getHeight(), // The size to stretch the texture to.
+				1, 1, // The x and y scale of the rendered texture.
+				degrees, // The rotation of the rendered texture.
+				0, 0, // The source position of the rendered texture within the Graphic's texture.
+				texture.getWidth(), texture.getHeight(), // The source size of the rendered texture within the Graphic's texture.
+				false, false // If the rendered texture is flipped over the x and y axis respectively.
+			);
+	}
 }
