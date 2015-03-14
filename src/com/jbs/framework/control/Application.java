@@ -72,6 +72,7 @@ public class Application implements ApplicationListener {
 		setState(initialState);
 	}
 	
+	int i = 0;
 	/**
 	 * Exit the current ApplicationState and enter the new one.
 	 * The ApplicationState will automatically update the Application and
@@ -79,21 +80,19 @@ public class Application implements ApplicationListener {
 	 * @param newState The new state of the Application.
 	 */
 	public void setState(ApplicationState newState) {
+		ApplicationState oldState = applicationState;
+		// Bind the application state.
+		applicationState = newState;
+		
 		// We may not enter or exit states until the application is created.
 		if (created) {
 			// If we have a current application state, exit it.
-			if (applicationState() != null)
-				applicationState().exitState();
+			if (oldState != null)
+				oldState.exitState();
 			
 			// Enter our new state immediately.
 			newState.enterState();
 		}
-		
-		if (newState == applicationState)
-			System.out.println("Warning in Application.setState() : setting the Application to the state it is already in!");
-		
-		// Bind the application state.
-		applicationState = newState;
 	}
 	
 	@Override
@@ -103,18 +102,11 @@ public class Application implements ApplicationListener {
 //		//camera.setToOrtho(false, screen().virtualWidth(), screen().virtualHeight());
 //		((OrthographicCamera)camera).setToOrtho(false, screen().virtualWidth(), screen().virtualHeight());
 		
-		final float FOV = 67, d = 1000f;
+		final float FOV = 67;
 		PerspectiveCamera cam = new PerspectiveCamera(FOV, screen().virtualWidth(), screen().virtualHeight());
 		cam.near = 0.1f;
 		cam.far = 10000f;
-		// Math.cos(FOV / 2) * Hypotenuse -330
-		//cam.position.set((float)Math.cos(FOV) * d, (float)Math.sin(FOV) * d, (float)Math.tan(FOV) * d);
-		float h = ((screen().virtualWidth()/2f)) / (float)Math.sin(Math.toRadians(FOV));
-		float z = ((float)Math.cos(Math.toRadians(FOV)) * h);
-		System.out.println("h : " + h);
-		System.out.println("z : " + z);
 		cam.translate(screen().virtualWidth()/2, screen.virtualHeight()/2, 581);
-		//cam.lookAt(0, 0, 0);
 		this.camera = cam;
 		
 		// Disable the enforcement of only allowing pot images.

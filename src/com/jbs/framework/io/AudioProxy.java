@@ -12,40 +12,22 @@ public class AudioProxy {
 	protected final AssetManager assets;
 	protected final ArrayList<Music> currentlyPlayingMusic;
 	
-	// Strict-Mode exclusive Exceptions.
-	private RuntimeException
-		audioAlreadyMutedException, audioNotMutedException,
-		musicAlreadyPlayingException, musicNotPlayingException;
-	// Other Exceptions.
-	private RuntimeException
-		assetNotLoadedException, assetDoesNotExistException;
-	
-	/* The volume to play Sounds at when no volume is specified. */
+	/** The volume to play Sounds at when no volume is specified. */
 	private float defaultSoundVolume = 1;
-	/* Whether or not to loop music when it is not specified one way or the other. */
+	/** Whether or not to loop music when it is not specified one way or the other. */
 	private boolean defaultMusicLooping = false;
-	/* True when the AudioProxy should produce no noise. */
+	/** True when the AudioProxy should produce no noise. */
 	private boolean isMuted;
-	/* True if the AudioProxy should treat redundant/superfluous usage as an error. */
+	/** True if the AudioProxy should treat redundant/superfluous usage as an error. */
 	private final boolean isStrict;
 	
 	public AudioProxy(AssetManager assets, boolean isStrict) {
 		this.assets = assets;
 		this.isStrict = isStrict;
 		this.currentlyPlayingMusic = new ArrayList<Music>();
-		
-		// Define the warning to give when throwing an Exception that would not have been thrown if the AudioProxy was not strict.
-		final String isStrictWarning = "This Exception is only thrown when the AudioProxy isStrict.";
-		this.setAudioAlreadyMutedException(new RuntimeException("Cannot mute the Audio, Audio is already muted." + isStrictWarning));
-		this.setAudioNotMutedException(new RuntimeException("Cannot unmute the Audio, Audio is not muted." + isStrictWarning));
-		this.setMusicAlreadyPlayingException(new RuntimeException("Cannot play music that is already playing." + isStrictWarning));
-		this.setMusicNotPlayingException(new RuntimeException("Cannot stop music that is not playing." + isStrictWarning));
-		
-		this.setAssetNotLoadedException(new RuntimeException("Cannot retrieve asset from the AudioProxy's AssetManager, the asset has not yet been loaded."));
-		this.setAssetDoesNotExistException(new RuntimeException("Cannot retrieve asset from the AudioProxy's AssetManager, the asset has not been loaded by the AssetManager and it does not exist."));
 	}
 	
-	/* Play the Sound located at the specified source. */
+	/** Play the Sound located at the specified source. */
 	public void playSound(FileHandle soundSource, float volume) {
 		// If the AudioProxy is muted,
 		if (this.isMuted())
@@ -55,12 +37,12 @@ public class AudioProxy {
 		getSound(soundSource).play(volume);
 	}
 	
-	/* Play the Sound located at the specified source. Uses the AudioProxy's defaultSoundVolume. */
+	/** Play the Sound located at the specified source. Uses the AudioProxy's defaultSoundVolume. */
 	public void playSound(FileHandle soundSource) {
 		playSound(soundSource, this.defaultSoundVolume());
 	}
 	
-	/* Retrieve the specified Music from the AudioProxy's AssetManager then play it. If
+	/** Retrieve the specified Music from the AudioProxy's AssetManager then play it. If
 	 * the AudioProxy isStrict and the Music is already playing, this method will throw
 	 * the AudioProxy's musicAlreadyPlayingException. */
 	public void playMusic(FileHandle musicSource, boolean shouldLoopMusic) {
@@ -77,7 +59,7 @@ public class AudioProxy {
 		
 		// If our AudioProxy is being strict and the Music is already playing,
 		if (this.isStrict() && music.isPlaying())
-			throw musicAlreadyPlayingException;
+			throw new RuntimeException("Cannot play Music that is already playing.");
 		
 		// Set whether the Music should loop or not.
 		music.setLooping(shouldLoopMusic);
@@ -85,14 +67,25 @@ public class AudioProxy {
 		music.play();
 	}
 	
-	/* Retrieve the specified Music from the AudioProxy's AssetManager then play it. If
+	public void pauseMusic(FileHandle musicSource) {
+		Music music = getMusic(musicSource);
+		
+		if (!currentlyPlayingMusic.contains(music))
+			throw new RuntimeException("Cant pause, not playing music : " + music);
+		
+		currentlyPlayingMusic.remove(music);
+		
+		music.pause();
+	}
+	
+	/** Retrieve the specified Music from the AudioProxy's AssetManager then play it. If
 	 * the AudioProxy isStrict and the Music is already playing, this method will throw
 	 * the AudioProxy's musicAlreadyPlayingException. Uses the AudioProxy's defaultMusicLooping. */
 	public void playMusic(FileHandle musicSource) {
 		playMusic(musicSource, this.defaultMusicLooping());
 	}
 	
-	/* Retrieve the specified Music from the AudioProxy's AssetManager then play it. If
+	/** Retrieve the specified Music from the AudioProxy's AssetManager then play it. If
 	 * the AudioProxy isStrict and the Music not playing, this method will throw
 	 * the AudioProxy's musicNotPlayingException. */
 	public void stopMusic(FileHandle musicSource) {
@@ -108,7 +101,7 @@ public class AudioProxy {
 			
 		// If our AudioProxy is being strict and the Music is not playing,
 		if (this.isStrict() && !music.isPlaying())
-			throw musicNotPlayingException;
+			throw new RuntimeException("Cannot stop Music that is not playing.");
 		
 		// Stop the Music.
 		music.stop();
@@ -158,40 +151,6 @@ public class AudioProxy {
 		return this.isMuted;
 	}
 	
-	/* Set the Exception to throw if there is a request to unmute the AudioProxy and it is not
-	 * muted. Exception only thrown if the AudioProxy is strict. */
-	public final void setAudioNotMutedException(RuntimeException newException) {
-		this.audioNotMutedException = newException;
-	}
-	
-	/* Set the Exception to throw if there is a request to mute the AudioProxy and it is already
-	 * muted. Exception only thrown if the AudioProxy is strict. */
-	public final void setAudioAlreadyMutedException(RuntimeException newException) {
-		this.audioAlreadyMutedException = newException;
-	}
-	
-	/* Set the Exception to throw when the AudioProxy has been requested to stop Music that
-	 * is not playing. Exception only thrown if the AudioProxy is strict. */
-	public final void setMusicNotPlayingException(RuntimeException newException) {
-		this.musicNotPlayingException = newException;
-	}
-	
-	/* Set the Exception to throw when the AudioProxy has been requested to play Music that
-	 * is already playing. Exception only thrown if the AudioProxy is strict. */
-	public final void setMusicAlreadyPlayingException(RuntimeException newException) {
-		this.musicAlreadyPlayingException = newException;
-	}
-	
-	/* Set the Exception to throw when a requested asset is not loaded. */ 
-	public final void setAssetNotLoadedException(RuntimeException newException) {
-		this.assetNotLoadedException = newException;
-	}
-	
-	/* Set the Exception to throw when a requested asset does not exist. */ 
-	public final void setAssetDoesNotExistException(RuntimeException newException) {
-		this.assetDoesNotExistException = newException;
-	}
-	
 	/* Retrieve the Sound from the Game's AssetManager. Throws RuntimeException if
 	 * the Game has not yet been created with it's create() method. */
 	protected Sound getSound(FileHandle soundSource) {
@@ -217,48 +176,14 @@ public class AudioProxy {
 		if (!assets.isLoaded(asset.path())) {
 			// If the asset does not exist,
 			if (!asset.exists())
-				throw assetDoesNotExistException;
+				throw new RuntimeException(asset.path() + " does not exist.");
 			else
-				throw assetNotLoadedException;
+				throw new RuntimeException(asset.path() + " is not yet loaded.");
 		}
 	}
 	
 	/* @return true if the AudioProxy should throw Exceptions if there is redundant/superfluous usage. */
 	protected boolean isStrict() {
 		return isStrict;
-	}
-	
-	/* @return the Exception to throw if there is a request to unmute the AudioProxy and it is not
-	 * muted. Exception only thrown if the AudioProxy is strict. */
-	protected final RuntimeException audioNotMutedException() {
-		return this.audioNotMutedException;
-	}
-	
-	/* @return the Exception to throw if there is a request to mute the AudioProxy and it is already
-	 * muted. Exception only thrown if the AudioProxy is strict. */
-	protected final RuntimeException audioAlreadyMutedException() {
-		return this.audioAlreadyMutedException;
-	}
-	
-	/* @return the Exception to throw when the AudioProxy has been requested to stop Music that
-	 * is not playing. Exception only thrown if the AudioProxy is strict. */
-	protected final RuntimeException musicNotPlayingException() {
-		return musicNotPlayingException;
-	}
-	
-	/* @return the Exception to throw when the AudioProxy has been requested to play Music that
-	 * is already playing. Exception only thrown if the AudioProxy is strict. */
-	protected final RuntimeException musicAlreadyPlayingException() {
-		return musicAlreadyPlayingException;
-	}
-	
-	/* @return the Exception to throw when an requested asset is not loaded. */
-	protected final RuntimeException assetNotLoadedException() {
-		return assetNotLoadedException;
-	}
-	
-	/* @return the Exception to throw when an requested asset does not exist. */
-	protected final RuntimeException assetDoesNotExistException() {
-		return assetDoesNotExistException;
 	}
 }
