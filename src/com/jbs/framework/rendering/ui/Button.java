@@ -1,6 +1,6 @@
 package com.jbs.framework.rendering.ui;
 
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.jbs.framework.io.InputProxy;
 import com.jbs.framework.rendering.Graphic;
@@ -9,10 +9,10 @@ import com.jbs.framework.util.Updatable;
 public class Button extends Graphic implements Updatable {
 	
 	/* The texture to be rendered if the button's state is !pressed */
-	private Texture unpressedTexture;
+	private TextureRegion unpressedTexture;
 	
 	/* The texture to be rendered if the button's state is pressed */
-	private Texture pressedTexture;
+	private TextureRegion pressedTexture;
 	
 	/* The button's state */
 	private boolean pressed;
@@ -20,34 +20,34 @@ public class Button extends Graphic implements Updatable {
 	/* If the input's touch has yet been released */
 	private boolean hasReleasedTouch;
 	
-	public Button(float x, float y, Texture unpressedTexture, Texture pressedTexture) {
+	public Button(float x, float y, TextureRegion unpressedTexture, TextureRegion pressedTexture) {
 		super(x, y, unpressedTexture);
 		this.unpressedTexture = unpressedTexture;
 		this.pressedTexture = pressedTexture;
 	}
 	
-	public Button(Vector2 center, Texture unpressedTexture, Texture pressedTexture) {
+	public Button(Vector2 center, TextureRegion unpressedTexture, TextureRegion pressedTexture) {
 		this(center.x, center.y, unpressedTexture, pressedTexture);
 	}
 	
-	public Button(Vector2 center, Texture texture) {
+	public Button(Vector2 center, TextureRegion texture) {
 		this(center.x, center.y, texture, texture);
 	}
 	
 	/** Set the both the Button's Textures. */
 	@Override
-	public void setTexture(Texture newTexture) {
+	public void setTexture(TextureRegion newTexture) {
 		setPressedTexture(newTexture);
 		setUnpressedTexture(newTexture);
 	}
 	
 	/** Set the Texture to render when the Button is pressed. */
-	public void setPressedTexture(Texture newTexture) {
+	public void setPressedTexture(TextureRegion newTexture) {
 		this.pressedTexture = newTexture;
 	}
 	
 	/** Set the Texture to render when the Button is not pressed. */
-	public void setUnpressedTexture(Texture newTexture) {
+	public void setUnpressedTexture(TextureRegion newTexture) {
 		this.unpressedTexture = newTexture;
 	}
 	
@@ -62,7 +62,7 @@ public class Button extends Graphic implements Updatable {
 	 * @return the texture to be drawn, depends on the button's state.
 	 */
 	@Override
-	public Texture texture() {
+	public TextureRegion texture() {
 		if (isPressed())
 			return pressedTexture;
 		else
@@ -144,12 +144,15 @@ public class Button extends Graphic implements Updatable {
 				(inputY <= y() + height()/2));
 	}
 	
+	
 	/**
 	 * Dispose of the textures 'pressedTexture' and
 	 * 'unpressedTexture' passed in through the button's constructor.
 	 */
 	public void dispose() {
+		/* not needed with asset manager / this game is too small to worry about
 		pressedTexture.dispose();
 		unpressedTexture.dispose();
+		*/
 	}
 }

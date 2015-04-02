@@ -1,14 +1,15 @@
 package com.jbs.framework.rendering;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 public class Graphic implements Renderable {
 	
 	/** The Texture to be rendered */
-	private Texture texture;
+	private TextureRegion texture;
 	
 	private Vector2
 		/** The center of the graphic */
@@ -24,26 +25,26 @@ public class Graphic implements Renderable {
 	 * Create a new Graphic with it's center set to (x, y), with a width and height,
 	 * the Texture 'texture'.
 	 */
-	public Graphic(float x, float y, float width, float height, Texture texture) {
+	public Graphic(float x, float y, float width, float height, TextureRegion texture) {
 		this.texture = texture;
 		this.position = new Vector2(x, y);
 		this.size = new Vector2(width, height);
 		this.scale = new Vector2(1, 1);
 	}
 	
-	public Graphic(Vector2 center, Vector2 size, Texture texture) {
+	public Graphic(Vector2 center, Vector2 size, TextureRegion texture) {
 		this(center.x, center.y, size.x, size.y, texture);
 	}
 	
-	public Graphic(Vector2 center, Texture texture) {
-		this(center.x, center.y, texture.getWidth(), texture.getHeight(), texture);
+	public Graphic(Vector2 center, TextureRegion texture) {
+		this(center.x, center.y, texture.getRegionWidth(), texture.getRegionHeight(), texture);
 	}
 	
 	/**
 	 * Create a new Graphic with it's center set to (x, y) and the Texture 'texture'.
 	 */
-	public Graphic(float x, float y, Texture texture) {
-		this(x, y, texture.getWidth(), texture.getHeight(), texture);
+	public Graphic(float x, float y, TextureRegion texture) {
+		this(x, y, texture.getRegionWidth(), texture.getRegionHeight(), texture);
 	}
 	
 	/**
@@ -134,12 +135,24 @@ public class Graphic implements Renderable {
 	public float width() {
 		return size.x * scale.x;
 	}
+	/**
+	 * @return the src width of the graphic.
+	 */
+	public float srcWidth() {
+		return size.x;
+	}
 	
 	/**
 	 * @return the height of the graphic.
 	 */
 	public float height() {
 		return size.y * scale.y;
+	}
+	/**
+	 * @return the src height of the graphic.
+	 */
+	public float srcHeigt() {
+		return size.y;
 	}
 	
 	/**
@@ -188,7 +201,7 @@ public class Graphic implements Renderable {
 	/**
 	 * @return the graphic's texture.
 	 */
-	public Texture texture() {
+	public TextureRegion texture() {
 		return texture;
 	}
 	
@@ -199,7 +212,7 @@ public class Graphic implements Renderable {
 	/**
 	 * Set the graphic's texture to newTexture.
 	 */
-	public void setTexture(Texture newTexture) {
+	public void setTexture(TextureRegion newTexture) {
 		texture = newTexture;
 	}
 	
@@ -214,10 +227,7 @@ public class Graphic implements Renderable {
 				width()/2, height()/2, // The offset relative to the position to rotate around.
 				width(), height(), // The size to stretch the texture to.
 				1, 1, // The x and y scale of the rendered texture.
-				rotation, // The rotation of the rendered texture.
-				0, 0, // The source position of the rendered texture within the Graphic's texture.
-				texture().getWidth(), texture().getHeight(), // The source size of the rendered texture within the Graphic's texture.
-				false, false // If the rendered texture is flipped over the x and y axis respectively.
+				rotation // The rotation of the rendered texture.
 			);
 	}
 	
@@ -262,21 +272,27 @@ public class Graphic implements Renderable {
 		batch.setColor(identity);
 	}
 	
-	public static void drawRotated(SpriteBatch batch, Texture texture, Vector2 center, float degrees) {
+	public static void drawRotated(SpriteBatch batch, TextureRegion texture, Vector2 center, float degrees) {
+		/*
 		Graphic g = new Graphic(center, texture);
 		g.rotate(degrees);
 		g.renderTo(batch);
-		
+		*/
 		batch.draw(
 				texture, // Draw the Graphic's texture.
-				center.x -texture.getWidth()/2, center.y - texture.getHeight()/2, // The position to render at.
-				texture.getWidth()/2, texture.getHeight()/2, // The offset relative to the position to rotate around.
-				texture.getWidth(), texture.getHeight(), // The size to stretch the texture to.
+				center.x -texture.getRegionWidth()/2, center.y - texture.getRegionHeight()/2, // The position to render at.
+				texture.getRegionWidth()/2, texture.getRegionHeight()/2, // The offset relative to the position to rotate around.
+				texture.getRegionWidth(), texture.getRegionHeight(), // The size to stretch the texture to.
 				1, 1, // The x and y scale of the rendered texture.
-				degrees, // The rotation of the rendered texture.
-				0, 0, // The source position of the rendered texture within the Graphic's texture.
-				texture.getWidth(), texture.getHeight(), // The source size of the rendered texture within the Graphic's texture.
-				false, false // If the rendered texture is flipped over the x and y axis respectively.
+				degrees // The rotation of the rendered texture.
 			);
+	}
+
+	public Vector2 getPosition() {
+		return new Vector2(x(),y());
+	}
+
+	public void setFilter(TextureFilter minFilter, TextureFilter magFilter) {
+		texture.getTexture().setFilter(minFilter,magFilter);
 	}
 }

@@ -33,7 +33,7 @@ public class Screen {
 	 * @return the width of the virtual screen.
 	 */
 	public int virtualWidth() {
-		return (int)virtualSize.x;
+		return (int)(virtualSize.x);
 	}
 	
 	/*
@@ -48,7 +48,7 @@ public class Screen {
 	 */
 	public final float actualAspectRatio() {
 		// AspectRatio = height / width
-		return actualHeight() / actualWidth();
+		return actualWidth() / actualHeight();
 	}
 	
 	/*

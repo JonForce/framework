@@ -102,12 +102,7 @@ public class Application implements ApplicationListener {
 //		//camera.setToOrtho(false, screen().virtualWidth(), screen().virtualHeight());
 //		((OrthographicCamera)camera).setToOrtho(false, screen().virtualWidth(), screen().virtualHeight());
 		
-		final float FOV = 67;
-		PerspectiveCamera cam = new PerspectiveCamera(FOV, screen().virtualWidth(), screen().virtualHeight());
-		cam.near = 0.1f;
-		cam.far = 10000f;
-		cam.translate(screen().virtualWidth()/2, screen.virtualHeight()/2, 581);
-		this.camera = cam;
+		resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		
 		// Disable the enforcement of only allowing pot images.
 		Texture.setEnforcePotImages(false);
@@ -147,7 +142,12 @@ public class Application implements ApplicationListener {
 
 	@Override
 	public void resize(int width, int height) {
-		
+		final float FOV = 67;
+		PerspectiveCamera cam = new PerspectiveCamera(FOV, screen().virtualWidth(), screen().virtualHeight());
+		cam.near = 0.1f;
+		cam.far = 10000f;
+		cam.translate(screen().virtualWidth()/2, screen.virtualHeight()/2, 581);
+		this.camera = cam;
 	}
 
 	@Override
